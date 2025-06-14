@@ -1,0 +1,48 @@
+pipeline {
+    agent any
+
+    environment {
+        CI = 'true'
+        PORT = '3000' // Optional, if your app uses it
+    }
+
+    tools {
+        nodejs 'Node 18' // Set this in Jenkins: Manage Jenkins → Global Tool Configuration
+    }
+
+    stages {
+        stage('Checkout') {
+            steps {
+                git 'https://github.com/aishaax/feedback-webapp.git'
+            }
+        }
+
+        stage('Install Dependencies') {
+            steps {
+                sh 'npm install'
+            }
+        }
+
+        stage('Start App') {
+            steps {
+                sh 'nohup node app.js > app.log 2>&1 &'
+                sleep 5 // Wait for server to start
+            }
+        }
+
+        stage('Run Selenium Tests') {
+            steps {
+                sh '''
+                chromium-browser --version || true
+                npx mocha tests/*.js --timeout 10000
+                '''
+            }
+        }
+    }
+
+    post {
+        always {
+            echo "📦 Pipeline execution completed."
+        }
+    }
+}
