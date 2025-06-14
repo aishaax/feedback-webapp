@@ -30,3 +30,4 @@ This is a simple full-stack web application built with:
 
 ## 📁 Folder Structure
 #test1 trigger
+#test2 trigger
